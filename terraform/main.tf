@@ -217,9 +217,4 @@ resource "aws_db_instance" "db_instance" {
   username            = "foo"
   password            = "foobarbaz"
   skip_final_snapshot = true
-=======
-   website {
-       index_document = "index.html"
-   }
->>>>>>> fc7017aefb50045b19a2a6d6ab9c1d7e4f2f328d
 }
