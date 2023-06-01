@@ -1,20 +1,5 @@
-<<<<<<< HEAD
 # Assumes s3 bucket and dynamo DB table already set up
 # See /code/03-basics/aws-backend
-=======
-terraform {
-required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">=3.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-}
->>>>>>> fc7017aefb50045b19a2a6d6ab9c1d7e4f2f328d
 
 terraform {
   backend "s3" {
