@@ -202,8 +202,6 @@ resource "aws_db_instance" "db_instance" {
   storage_type         = "standard"
   engine               = "postgres"
   engine_version       = "14"
-  family               = "postgres14" # DB parameter group
-  major_engine_version = "14"         # DB option group
   instance_class       = "db.t4g.large"
   name                 = "mydb"
   username             = "foo"
@@ -237,14 +235,14 @@ EOF
 }
 
 resource "aws_s3_bucket_ownership_controls" "dibo-dev-test" {
-  bucket = aws_s3_bucket.dibo-dev-test.id
+  bucket = aws_s3_bucket.s3Bucket.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "dibo-dev-test" {
-  bucket = aws_s3_bucket.dibo-dev-test.id
+resource "aws_s3_bucket_public_access_block" "dibo-dev-test-access" {
+  bucket = aws_s3_bucket.s3Bucket.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -255,9 +253,9 @@ resource "aws_s3_bucket_public_access_block" "dibo-dev-test" {
 resource "aws_s3_bucket_acl" "dibo-dev-test-acl" {
   depends_on = [
     aws_s3_bucket_ownership_controls.dibo-dev-test,
-    aws_s3_bucket_public_access_block.dibo-dev-test,
+    aws_s3_bucket_public_access_block.dibo-dev-test-access,
   ]
 
-  bucket = aws_s3_bucket.dibo-dev-test.id
+  bucket = aws_s3_bucket.s3Bucket.id
   acl    = "public-read"
 }
