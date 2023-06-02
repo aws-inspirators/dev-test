@@ -249,13 +249,3 @@ resource "aws_s3_bucket_public_access_block" "dibo-dev-test-access" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
-
-resource "aws_s3_bucket_acl" "dibo-dev-test-acl" {
-  depends_on = [
-    aws_s3_bucket_ownership_controls.dibo-dev-test,
-    aws_s3_bucket_public_access_block.dibo-dev-test-access,
-  ]
-
-  bucket = aws_s3_bucket.s3Bucket.id
-  acl    = "public-read"
-}
