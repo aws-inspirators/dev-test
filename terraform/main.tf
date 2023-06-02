@@ -212,7 +212,7 @@ resource "aws_db_instance" "db_instance" {
 resource "aws_s3_bucket" "s3Bucket" {
      bucket = "dibo-s3-website-actions"
 
-     policy  = <<EOF
+     /* policy  = <<EOF
 {
      "id" : "MakePublic",
    "version" : "2012-10-17",
@@ -227,7 +227,7 @@ resource "aws_s3_bucket" "s3Bucket" {
       }
     ]
   }
-EOF
+EOF */
 
    website {
        index_document = "index.html"
