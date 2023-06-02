@@ -1,0 +1,82 @@
+# name: Deploy Infrastructure
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   tf_fmt:
+#     name: Deploy Site
+#     runs-on: ubuntu-latest
+#     steps:
+
+#     - name: Checkout Repo
+#       uses: actions/checkout@v1
+
+#     - name: Terraform Init
+#       uses: hashicorp/terraform-github-actions/init@v0.4.0
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         TF_ACTION_WORKING_DIR: 'terraform'
+#         AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+#     - name: Terraform Validate
+#       uses: hashicorp/terraform-github-actions/validate@v0.3.7
+
+#   # - name: Terraform Apply
+#   #   uses: hashicorp/terraform-github-actions/apply@v0.4.0
+#   #   env:
+#   #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#   #     TF_ACTION_WORKING_DIR: 'terraform'
+#   #     AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   #     AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+#     # - name: terraform destroy
+#     #   uses: hashicorp/terraform-github-actions/destroy@v0.4.0
+#     #   env:
+#     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     #     TF_ACTION_WORKING_DIR: 'terraform'
+#     #     AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+#     #     AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+name: Terraform Destroy
+  on:
+    push:
+      branches:
+        - main
+        jobs:
+         tf-destroy:
+           runs-on: ubuntu-latest
+           env:
+              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              AWS_REGION: 'us-east-1'
+           steps:
+              - name: Checkout
+                uses: actions/checkout@v2
+                
+              - name: Setup Terraform                                                                      
+                uses: hashicorp/setup-terraform@v1
+        
+              - name: Terraform Init
+                id: init
+                run: terraform init  
+                
+              - name: Show Destroy plan
+                run: terraform plan -destroy
+                continue-on-error: true
+        
+              - name: Terraform destroy
+                id: destroy
+                run: terraform destroy -auto-approve
+              
+    # - name: Sync S3
+    #   uses: jakejarvis/s3-sync-action@master
+    #   env:
+    #     SOURCE_DIR: './src'
+    #     AWS_REGION: 'us-east-1'
+    #     AWS_S3_BUCKET: 'dibo-github-actions'
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
