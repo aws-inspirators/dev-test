@@ -198,20 +198,21 @@ resource "aws_lb" "load_balancer" {
 # }
 
 resource "aws_db_instance" "db_instance" {
-  allocated_storage   = 20
-  storage_type        = "standard"
-  engine              = "postgres"
-  engine_version      = "14.0"
-  instance_class      = "db.m5d.large"
-  name                = "mydb"
-  username            = "foo"
-  password            = "foobarbaz"
-  skip_final_snapshot = true
+  allocated_storage    = 20
+  storage_type         = "standard"
+  engine               = "postgres"
+  engine_version       = "14"
+  family               = "postgres14" # DB parameter group
+  major_engine_version = "14"         # DB option group
+  instance_class       = "db.t4g.large"
+  name                 = "mydb"
+  username             = "foo"
+  password             = "foobarbaz"
+  skip_final_snapshot  = true
 }
-
+  
 resource "aws_s3_bucket" "s3Bucket" {
      bucket = "dibo-s3-website-actions"
-     acl       = "public-read"
 
      policy  = <<EOF
 {
@@ -233,4 +234,30 @@ EOF
    website {
        index_document = "index.html"
    }
+}
+
+resource "aws_s3_bucket_ownership_controls" "dibo-dev-test" {
+  bucket = aws_s3_bucket.dibo-dev-test.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "dibo-dev-test" {
+  bucket = aws_s3_bucket.dibo-dev-test.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "dibo-dev-test-acl" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.dibo-dev-test,
+    aws_s3_bucket_public_access_block.dibo-dev-test,
+  ]
+
+  bucket = aws_s3_bucket.dibo-dev-test.id
+  acl    = "public-read"
 }
