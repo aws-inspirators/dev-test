@@ -202,9 +202,35 @@ resource "aws_db_instance" "db_instance" {
   storage_type        = "standard"
   engine              = "postgres"
   engine_version      = "14.0"
-  instance_class      = "db.t4g.large"
+  instance_class      = "db.m5d.large"
   name                = "mydb"
   username            = "foo"
   password            = "foobarbaz"
   skip_final_snapshot = true
+}
+
+resource "aws_s3_bucket" "s3Bucket" {
+     bucket = "dibo-s3-website-actions"
+     acl       = "public-read"
+
+     policy  = <<EOF
+{
+     "id" : "MakePublic",
+   "version" : "2012-10-17",
+   "statement" : [
+      {
+         "action" : [
+             "s3:GetObject"
+          ],
+         "effect" : "Allow",
+         "resource" : "arn:aws:s3:::dibo-s3-website-actions/*",
+         "principal" : "*"
+      }
+    ]
+  }
+EOF
+
+   website {
+       index_document = "index.html"
+   }
 }
